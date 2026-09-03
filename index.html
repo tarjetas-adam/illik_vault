@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>illik · vault</title>
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F4F1E9">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="vault">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F4F1E9;
+    --card-current:#E84A2A;
+    --card-normal:#FFFFFF;
+    --black:#111111;
+    --orange:#E84A2A;
+    --yellow:#F1C84B;
+    --muted:#55534D;
+    --ease:cubic-bezier(0.22,0.61,0.36,1);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--black);
+    font-family:'Inter',sans-serif;
+    overscroll-behavior:none;
+    -webkit-font-smoothing:antialiased;
+  }
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    min-height:100dvh;
+    background:var(--cream);
+    position:relative;
+    overflow:hidden;
+  }
+  .screen{
+    position:absolute;
+    inset:0;
+    display:none;
+    flex-direction:column;
+    background:var(--cream);
+    min-height:100vh;
+    min-height:100dvh;
+  }
+  .screen.active{display:flex;}
+  .safe-top{height:env(safe-area-inset-top,0px);}
+  .safe-bottom{height:env(safe-area-inset-bottom,0px);}
+
+  button{font-family:inherit; border:none; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent;}
+  button:active{opacity:0.6;}
+
+  /* shared fade-step animation */
+  .fade-step{opacity:0; transform:translateY(6px); transition:opacity .42s var(--ease), transform .42s var(--ease);}
+  .fade-step.show{opacity:1; transform:translateY(0);}
+
+  /* ---------- UNLOCK ---------- */
+  #screen-unlock{align-items:center; justify-content:flex-start; padding:64px 32px 32px;}
+  .unlock-logo{text-align:center; margin-bottom:36px;}
+  .unlock-logo .wordmark{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:34px;
+    line-height:1;
+    letter-spacing:-0.02em;
+  }
+  .unlock-logo .sub{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:15px;
+    color:var(--orange);
+    margin-top:4px;
+  }
+  .unlock-logo .sub::before{content:"· "; color:var(--orange);}
+  .unlock-prompt{
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:22px;
+    letter-spacing:0.01em;
+  }
+  .pin-dots{display:flex; gap:16px; margin-bottom:40px;}
+  .pin-dot{
+    width:14px; height:14px; border-radius:50%;
+    border:1.5px solid var(--black);
+    background:transparent;
+    transition:background .18s var(--ease), border-color .18s var(--ease);
+  }
+  .pin-dot.filled{background:var(--black); border-color:var(--black);}
+  .pin-dot.error{border-color:var(--orange); background:var(--orange);}
+  .keypad{
+    display:grid;
+    grid-template-columns:repeat(3, 74px);
+    gap:18px 22px;
+    justify-content:center;
+  }
+  .key{
+    width:74px; height:74px;
+    border-radius:50%;
+    background:var(--card-normal);
+    font-size:26px;
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    color:var(--black);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 1px 3px rgba(17,17,17,0.06);
+  }
+  .key.fade-step{transition:opacity .35s var(--ease), transform .35s var(--ease), background .15s var(--ease);}
+  .key:active{transform:scale(0.93) !important; background:#efece3;}
+  .key.ghost{background:transparent; box-shadow:none;}
+
+  /* ---------- HOME ---------- */
+  #screen-home{padding:0 22px;}
+  .home-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    padding:26px 0 20px;
+  }
+  .home-wordmark .wordmark{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:30px;
+    line-height:1;
+    letter-spacing:-0.02em;
+  }
+  .home-wordmark .sub{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:14px;
+    color:var(--orange);
+    margin-top:3px;
+  }
+  .home-wordmark .sub::before{content:"· ";}
+  .copy-btn{
+    width:34px; height:34px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--black);
+    margin-top:2px;
+    transition:transform .12s var(--ease);
+  }
+  .copy-btn:active{transform:scale(0.85); opacity:0.55;}
+  .copy-btn svg{width:16px; height:16px;}
+
+  .entry-list-wrap{
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:y proximity;
+    scroll-behavior:smooth;
+    height:508px; /* exactly 7 cards (64px) + 6 gaps (10px), fixed regardless of entry count */
+    scrollbar-width:none; /* Firefox */
+    -ms-overflow-style:none; /* legacy Edge */
+  }
+  .entry-list-wrap::-webkit-scrollbar{
+    display:none; /* Chrome, Safari, Android WebView */
+    width:0;
+    height:0;
+  }
+  .entry-list{display:flex; flex-direction:column; gap:10px;}
+  .entry-card{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:var(--card-normal);
+    border-radius:18px;
+    padding:14px 18px;
+    height:64px;
+    scroll-snap-align:start;
+    transition:transform .35s var(--ease), opacity .35s var(--ease), filter .35s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+    box-shadow:0 1px 2px rgba(17,17,17,0.05);
+    touch-action:manipulation;
+    user-select:none;
+    -webkit-user-select:none;
+    -webkit-touch-callout:none;
+  }
+  .entry-card.card-enter{opacity:0; transform:translateX(-26px);}
+  .entry-card.card-enter.show{opacity:1; transform:translateX(0);}
+  .entry-card.current{background:var(--card-current); box-shadow:0 4px 14px rgba(232,74,42,0.28);}
+  .entry-card.pressed{transform:scale(1.03);}
+  .entry-card.dim{filter:blur(4px); opacity:0.35;}
+  .entry-num{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:50px;
+    line-height:1;
+    transform:scaleX(0.78);
+    transform-origin:left center;
+    width:38px;
+    flex-shrink:0;
+    color:var(--black);
+  }
+  .entry-card.current .entry-num{color:#FBEAE3;}
+  .entry-date{
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    font-size:14.5px;
+    flex:1;
+    color:var(--black);
+  }
+  .entry-card.current .entry-date{color:#fff;}
+  .entry-arrow{width:18px; height:18px; flex-shrink:0; color:var(--black);}
+  .entry-card.current .entry-arrow{color:#fff;}
+
+  .empty-home{
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    margin-top:60px;
+    line-height:1.6;
+  }
+
+  .fab{
+    position:absolute;
+    left:50%;
+    bottom:calc(22px + env(safe-area-inset-bottom,0px));
+    transform:translateX(-50%);
+    width:64px; height:64px;
+    border-radius:50%;
+    background:var(--orange);
+    color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 20px rgba(232,74,42,0.38);
+    transition:transform .15s var(--ease);
+    z-index:40;
+  }
+  .fab:active{transform:translateX(-50%) scale(0.90); opacity:1;}
+  .fab svg{width:26px; height:26px;}
+
+  /* ---------- ENTRY (view / edit) shared ---------- */
+  .entry-screen{
+    padding:0 22px;
+    height:100vh;
+    height:100dvh;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .entry-header-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 0 16px;
+  }
+  .icon-btn.back{width:22px; height:22px; color:var(--black); flex-shrink:0;}
+  .entry-title-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding-bottom:16px;
+  }
+  .entry-title{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:20px;
+    color:var(--black);
+    outline:none;
+    border-radius:4px;
+    flex:1;
+    min-width:0;
+  }
+  .entry-title[contenteditable="true"]{background:rgba(232,74,42,0.06); padding:1px 4px; margin:-1px -4px;}
+  .entry-title:empty::before{content:attr(data-placeholder); color:#a29e91;}
+  .entry-shortdate{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .done-btn{
+    width:26px; height:26px;
+    color:var(--orange);
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .done-btn svg{width:100%; height:100%;}
+  .entry-divider{height:1.5px; background:var(--orange); margin:0 0 22px;}
+  .divider-step{transform:scaleX(0); transform-origin:left center; opacity:0; transition:transform .45s var(--ease), opacity .3s var(--ease);}
+  .divider-step.show{transform:scaleX(1); opacity:1;}
+
+  .entry-content{
+    font-family:'Source Serif 4', serif;
+    font-size:16.5px;
+    line-height:1.7;
+    color:var(--black);
+    outline:none;
+    padding-bottom:40px;
+    min-height:200px;
+  }
+  .entry-content p{margin:0 0 20px;}
+  .entry-content p:last-child{margin-bottom:0;}
+  .entry-content:empty::before{
+    content:attr(data-placeholder);
+    color:#9a968a;
+    pointer-events:none;
+  }
+  .entry-content mark.hl{
+    background:var(--yellow);
+    color:var(--black);
+    padding:1px 3px;
+    border-radius:4px;
+    box-decoration-break:clone;
+    -webkit-box-decoration-break:clone;
+  }
+
+  /* highlight popup */
+  .hl-popup{
+    position:fixed;
+    background:var(--black);
+    color:var(--cream);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:9px 16px;
+    border-radius:20px;
+    transform:translate(-50%,-100%) translateY(-10px) scale(0.9);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .15s var(--ease), transform .15s var(--ease);
+    z-index:50;
+    white-space:nowrap;
+  }
+  .hl-popup.show{opacity:1; transform:translate(-50%,-100%) translateY(-10px) scale(1); pointer-events:auto;}
+  .hl-popup::after{
+    content:"";
+    position:absolute;
+    left:50%; top:100%;
+    transform:translateX(-50%);
+    border:5px solid transparent;
+    border-top-color:var(--black);
+  }
+
+  /* toast */
+  .toast{
+    position:fixed;
+    left:50%; bottom:36px;
+    transform:translateX(-50%) translateY(10px);
+    background:var(--black);
+    color:var(--cream);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    padding:10px 18px;
+    border-radius:20px;
+    opacity:0;
+    transition:opacity .2s var(--ease), transform .2s var(--ease);
+    z-index:100;
+    pointer-events:none;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  .confirm-backdrop{
+    position:fixed; inset:0;
+    background:rgba(17,17,17,0.42);
+    display:flex; align-items:center; justify-content:center;
+    padding:32px;
+    opacity:0;
+    pointer-events:none;
+    -webkit-backdrop-filter:blur(0px);
+    backdrop-filter:blur(0px);
+    transition:opacity .4s var(--ease), -webkit-backdrop-filter .6s var(--ease), backdrop-filter .6s var(--ease);
+    z-index:110;
+  }
+  .confirm-backdrop.show{
+    opacity:1;
+    pointer-events:auto;
+    -webkit-backdrop-filter:blur(10px);
+    backdrop-filter:blur(10px);
+  }
+  .confirm-sheet{
+    background:var(--cream);
+    border-radius:20px;
+    padding:24px 22px 18px;
+    width:100%;
+    max-width:300px;
+    text-align:center;
+    transform:scale(0.92) translateY(6px);
+    transition:transform .35s var(--ease);
+    box-shadow:0 12px 30px rgba(17,17,17,0.25);
+  }
+  .confirm-backdrop.show .confirm-sheet{transform:scale(1) translateY(0);}
+  .confirm-title{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:19px;
+    line-height:1.4;
+    color:var(--black);
+    margin-bottom:22px;
+  }
+  .confirm-actions{display:flex; flex-direction:column; gap:8px;}
+  .confirm-delete, .confirm-cancel{
+    width:100%;
+    padding:13px 0;
+    border-radius:14px;
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    font-size:15px;
+  }
+  .confirm-delete{background:var(--orange); color:#fff;}
+  .confirm-cancel{background:#fff; color:var(--black); box-shadow:0 1px 2px rgba(17,17,17,0.08);}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 01 UNLOCK -->
+  <div class="screen active" id="screen-unlock">
+    <div class="safe-top"></div>
+    <div class="unlock-logo">
+      <div class="wordmark fade-step" id="u-word">illik</div>
+      <div class="sub fade-step" id="u-sub">vault</div>
+    </div>
+    <div class="unlock-prompt fade-step" id="unlock-prompt">Enter your 4-digit code</div>
+    <div class="pin-dots fade-step" id="pin-dots">
+      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+    </div>
+    <div class="keypad" id="keypad">
+      <button class="key fade-step" data-k="1">1</button>
+      <button class="key fade-step" data-k="2">2</button>
+      <button class="key fade-step" data-k="3">3</button>
+      <button class="key fade-step" data-k="4">4</button>
+      <button class="key fade-step" data-k="5">5</button>
+      <button class="key fade-step" data-k="6">6</button>
+      <button class="key fade-step" data-k="7">7</button>
+      <button class="key fade-step" data-k="8">8</button>
+      <button class="key fade-step" data-k="9">9</button>
+      <button class="key ghost fade-step" data-k="back">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5L3 12l6 7M21 12H5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="key fade-step" data-k="0">0</button>
+      <div></div>
+    </div>
+  </div>
+
+  <!-- 02 HOME -->
+  <div class="screen" id="screen-home">
+    <div class="safe-top"></div>
+    <div class="home-header">
+      <div class="home-wordmark">
+        <div class="wordmark fade-step" id="h-word">illik</div>
+        <div class="sub fade-step" id="h-sub">vault</div>
+      </div>
+      <button class="copy-btn" id="copy-btn" aria-label="Copy entries">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1"><rect x="9" y="9" width="12" height="12" rx="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <div class="entry-list-wrap" id="entry-list-wrap">
+      <div class="entry-list" id="entry-list"></div>
+    </div>
+    <button class="fab" id="new-entry-btn" aria-label="New entry">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
+
+  <!-- 03/04 ENTRY VIEW & EDIT (existing entry) -->
+  <div class="screen entry-screen" id="screen-entry">
+    <div class="safe-top"></div>
+    <div class="entry-header-top">
+      <button class="icon-btn back fade-step" id="entry-back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <div class="entry-shortdate fade-step" id="entry-shortdate-text"></div>
+    </div>
+    <div class="entry-title-row">
+      <div class="entry-title fade-step" id="entry-title-text" data-placeholder="Untitled"></div>
+    </div>
+    <div class="entry-divider divider-step" id="entry-divider-view"></div>
+    <div class="entry-content fade-step" id="entry-content" data-placeholder="Write what's on your mind..."></div>
+    <div class="safe-bottom"></div>
+  </div>
+
+  <!-- 05 NEW ENTRY -->
+  <div class="screen entry-screen" id="screen-new">
+    <div class="safe-top"></div>
+    <div class="entry-header-top">
+      <button class="icon-btn back fade-step" id="new-back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <div class="entry-shortdate fade-step" id="new-shortdate-text"></div>
+    </div>
+    <div class="entry-title-row">
+      <div class="entry-title fade-step" id="new-title-text" contenteditable="true" data-placeholder="New Entry"></div>
+      <button class="done-btn fade-step" id="new-done-btn" aria-label="Done">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12l6 6L20 6"/></svg>
+      </button>
+    </div>
+    <div class="entry-divider divider-step" id="new-divider"></div>
+    <div class="entry-content fade-step" id="new-content" contenteditable="true" data-placeholder="Write what's on your mind..."></div>
+    <div class="safe-bottom"></div>
+  </div>
+
+</div>
+
+<div class="hl-popup" id="hl-popup">Highlight</div>
+<div class="toast" id="toast"></div>
+
+<div class="confirm-backdrop" id="confirm-backdrop">
+  <div class="confirm-sheet">
+    <div class="confirm-title">Delete this entry?</div>
+    <div class="confirm-actions">
+      <button class="confirm-delete" id="confirm-delete-btn">Delete</button>
+      <button class="confirm-cancel" id="confirm-cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "illikVaultEntries";
+  var PIN = "2258";
+  var MIGRATION_FLAG = "illikVaultCleanupV2";
+
+  /* ---------------- data ---------------- */
+
+  var REAL_ENTRIES = [
+    { id:"r1", sessionNumber:1, date:"2026-06-06", title:"1. Alkalom", html:
+      `<p>Tapogatózó ismerkedés.</p><p>Magázódunk.</p><p>Mű, felvett "nyugalom" hatása részéről.</p><p>Nem adott házifeladot, de jelezte h mivel folytatnánk a következő alkalmat.</p><p>Mennyivel vagyok előrebb érzésre: 0/10</p>` },
+    { id:"r2", sessionNumber:2, date:"2026-06-13", title:"2. Alkalom", html:
+      `<p>Elküldtem neki a "ki vagyok én" házifeladatot annak reményében, h gyorsabban haladhassunk végig az ismerkedős fázison.</p><p>Frusztrációt érzek azzal kapcsolatosan, h ezen ismét végig kell menni. E mellett tisztában vagyok azzal, h elkerülhetetlen.</p><p>Emailben és személyesen jelezte, h ne küldjek emailt annak ellenére, h nagyot ugrottunk előre. Van kiről/miről kérdeznie és közelednénk ahhoz ami fontos, mélyreható kérdésekkel terelhetné a beszélgetést.</p><p>Kérésre megosztottam, h Leventével a sportpszichologussal milyen volt és miért hagytam ott. Egyelőre annyit mondtam, h nem éreztem kompetensnek és e miatt a bizalom hiányzott.</p><p>Második alkalommal is folytatódott az ismerkedés azzal, h belekérdezgetett abba amit küldtem.</p><p>Azzal zártuk, h következő alkalommal végigmegyünk az életutamon romantikus kapcsolatokon keresztül (ez egyben a "házifeladat" is)</p><p>Olvasta h az élet több területén is küzdök nehézségekkel. Ezt leszűkítjük a házasságom és a Dodóval kapcsolatosokra.</p><p>Az idő elrepült.</p><p>Mennyivel vagyok előrebb érzésre: 0/10</p>` },
+    { id:"r3", sessionNumber:3, date:"2026-07-04", title:"3. Alkalom", html:
+      `<p>Elkezdtünk végigmenni az életútamon romantikus kapcsolatokon keresztül.</p><p>Elég csapongó szession volt, a vége fele az apummal kapcsolatosan kérdezgetett. Igyekeztem megosztani, h milyen viselkedés minta miatt nem beszélek már vele.</p><p>Jeleztem, h még van dolgom azzal, h belém van nevelve h ha ezt meg ezt meg ezt csinálom "jó ember vagyok", ha ezeket akkor meg "rossz". Amit bár felismerek, de eggyel mélyebben van ahhoz, h levetkőzhessem.</p><p>Következő alkalomra ezekből írjak össze neki</p><p>Mennyivel vagyok előrebb érzésre: 0/10</p>` },
+    { id:"r4", sessionNumber:4, date:"2026-07-15", title:"4. Alkalom", html:
+      `<p>Enyhén frusztrálva távoztam.</p><p>Úgy éreztem, h ai-al volt egy kis áttörésem vagy inkább megértésem és nem tudtam értelmesen átadni.</p><p>Ragaszkodott példákhoz h mitol leszek jó vagy rossz ember. Próbáltam elmagyarazni, h ezt hogyan vezette el az ai oda ahova szeretném h menjen a terápia, mert nem tudom megválaszolni:</p><p>"Mi kellene ahhoz, h a remény záruljon be?"</p><p>Bármi is a házifeladat, ennek a levezetését szeretném tudni annyira megérteni, h vissza tudjam adni.</p><p>Mennyivel vagyunk beljebb: 1/10</p>` },
+    { id:"r5", sessionNumber:5, date:"2026-07-26", title:"5. Alkalom", html:
+      `<p>Sikerült megosztanom amit múltkor nem sikerült szavakba öntenem és amíg azóta ültem rajta tovább is gondoltam:</p><p>Egy felettébb szigorú apával nőttem fel ami azzal párosult, h csapongó érzelmi állapotú volt.</p><p>Ha rossz kedve volt nagyon oda kellett figyelnünk h úgy viselkedjünk, h ne robbanjon fel.</p><p>Ha pedig jó pillanata volt akkor meg ölelgetni és puszilgatni akart. Ezt nem igazán lehet öszintén csinálni, amit érzett is, megsértödött rajta és rossz kedve lett.</p><p>Úgy éreztem nem tudok nyerni.</p><p>Az apum szabályai kiegészültek egy saját szabályrendszerrel ami igyekezett meggátolni a vészhelyzeteket.</p><p>Évek óta nem élek ebben a közegben, de maradt még ebből a szabályrendszerből.</p><p>A legtöbbnek a gondolatmenetét felismerem, megjegyzen magamnak h ez az. Apróságok mint, h hogy kell viselkedni a vacsorasztalnál. De köztük olyan amit csak utólag asszociálok ezzel (task-time management amiért nem én lettem "a világ legjobb szakácsa")</p><p>Apám már nincs a szobában, de szabályrendszer logikáját továbbvittem. Csak megtöltöttem a saját szabályaimmal.</p><p>Ez eddig működött, most ütköztem bele egy olyan élethelyzetbe ahol a szabályból parancs sem vált be (a tiltás jelenleg átalakult mantrává ami pillanatnyilag nagy segítség, de tartok attól, h nem hosszú távú megoldás)</p><p>"Ami parancsot kap, nem változik. Elbújik. Álomba, arc keresésbe, résbe."</p><p>Ezt néhány órával ezelött a központi mondatának találtam ennek a 'felismerésnek'.</p><p>Annyival kiegészíteném, h ez eddig működött. Meg tudtam gyözni magam egy érzelmi állapotról.</p><p>Ez a helyzet úgy tűnik túl nőtte azt az érzelmi állapotot amit meg tudok határozni fejből.</p><p>Döntenem kellene, h a gyászfeldolgozás irányába megyünk tovább, vagy maradunk az eddigi úton.</p><p>Küld egy könyvet ami segíthet ebben döntésben, addig ezen megyünk tovább.</p><p>Mennyivel vagyunk beljebb: 3/10</p><p>(Picivel egy jó helyen vagyunk, lehet h az húzza fel 2-ről)</p>` },
+    { id:"r6", sessionNumber:6, date:"2026-08-05", title:"6. Alkalom", html:
+      `<p>A könyv 6-7. fejezeténél vagyok. Mondtam, h el fogom olvasni, de szerintem nem fog segíteni eldönteni milyen irányba menjünk. Örülnék a segítségének a döntésben.</p><p>Csapongó session volt. Hiányzott nekem a fókusz, mint a múltkorinál.</p><p>A második felében Dodóról beszéltünk.</p><p>Frusztráltságot eredményez, h nem osztottam meg még vele az egész Dodós storyt az elejétől a végéig részletesen. Így amikor ki-be ugrálunk ismétlődőnek érzem a kontextus adást.</p><p>Emellett a ami napig nyugtalanságot eredményez ennek az újra és újra felelevenítése.</p><p>A gyászfeldolgozás során "magunk mögé" tudjuk tenni vajon? Nem elnyomni akarom, de célszerünek gondolnám, ha tudnánk húzni egy vonalat és nem csak csámcsogunk rajta.</p><p>Mai napig elítélem magam azért a gondolatérr amit a pszichológusnak is megírtam: "ha pozitív lenne Dodó reakciója, nehéz lenne benne maradni a házasságomban"</p><p>Szívesen visszavenném, de így éreztem egy ponton és a mai napig nem tudnék teljes vállszélességgel beleállni az ellenkezőbe.</p><p>És nehéz összeegyeztetnem azzal, h olyan férfi szeretnék lenni aki válasz nélkül is megnyugvást tud találni a döntésében.</p><p>El szeretnék jutni egy olyan szintre, h egy esetleges találkozó esetén ne gondoljam, h felrobbanna a szívem.</p><p>A következő alkalom elején ezt megosztanám, beszélnék a könyvről és eltervezném a gyászfeldolgozás 7!!! alkalmas folyamatást.</p><p>Mennyivel vagyunk beljebb: 2.5/10</p><p>Közben befejeztem a könyvet.</p><p>Az elöbb is úgy fogalmaztam, h "magam mögé szeretném tenni", vagy "túl akarok lépni rajta".</p><p>A könyv filizófiája az, h eltávolodik ettől a hozzáállástól.</p><p>"A cél az, hogy annyira feldolgozzuk a fájdalmat, hogy emlékezni tudjunk a kapcsolatra anélkül, hogy a gyász elárasztana minket."</p><p>Szívesen tartanék itt.</p><p>E mellett apummal kapcsolatosan is gondolkodtam főleg anyum miatt és mivel sok időt töltök mostanában a testvérem családjával.</p><p>Egy pillanatra megkérdőjeleződött bennem, h nekem kellene-e felvennem vele a kapcsolatot.</p><p>DE</p><p>Én tisztán jeleztem, h úgy ahogy eddig volt nem szeretném folytatni a kapcsolatunkat.</p><p>Ha neki oké, h elveszíti a fiát akkor nekem amúgy sincs miért kűzdenem.</p><p>Ha pedig nem szeretne elveszíteni, akkor változnia kell.</p>` },
+    { id:"r7", sessionNumber:7, date:"2026-08-19", title:"7. Alkalom", html:
+      `<p>Faszom.</p><p>Hiányos az érzelmi szótáram ahhoz, h kifejezzem, h hogyan távoztam a mai alkalomról. Talán a feldúlt a legjobb szavam rá.</p><p>Megosztottam a vault bejegyzésem és folytattuk ahol a múltkor abbahagytuk. Párhuzamosan próbálom időrendbe helyezni a Dodóval való kapcsolatom a Piciével amibe könnyű belebonyolodni.</p><p>Nehéz újra megélni, h mennyire rossz döntéseket hoztam és helytelenül cselekedtem ebben a helyzetben.</p><p>Már feljegyeztem, h férfiként fel kellett volna ismernem a helyzetet ami megelőzte h beleszeressek Dodóba, de nem emiatt érzem magam szar embernek.</p><p>Akárkivel megtörténhet, h beleszeret valaki másba.</p><p>A kérdés az h mit kezdünk ezzel és hogyan cselekszünk és kommunikálunk.</p><p>Én elnyontam mind a sajá érzéseim mind a feleségemét.</p><p>A session végén azon akadt fenn érthető módon a pszichológus, h amikor kiderült, h a feleségem is beleszeretett régebben valaki másba, ez az információ mennyire hidegen hagyott.</p><p>Hát igen. Nem ez a legvonzóbb tulajdonságom.</p><p>A mai napig elhitetem magammal, h -bár fantasztikus a párom- igazából elég vagyok önmagamnak.</p><p>Innen folytatjuk jövő héten.</p>` },
+    { id:"r8", sessionNumber:8, date:"2026-08-26", title:"8. Alkalom", html:
+      `<p>Azon kapom magamat az alkalmak során, h akármikor nem arról beszélünk amiért jöttem, Dodóról, hanem apumról, gyerekkoromról vagy h milyen minták alapján formálódik a férfi szerepem ránézek az órára és számolgatom h még mennyi időnk van a lényegről beszélni, közepesen figyelek oda a szessionre és frusztrált leszek.</p><p>Abban a pillanatban lejátszódik bennem, h ez mind része a csomagnak és a végcélt szolgálja, össze fognak érni a szálak, de azért legközelebb el fogom forgatni az órát.</p><p>A "frusztrált vagyok" visszatérő kifejezés ami a hétköznapokban egyáltalán nem jellemez, de akármikor lelkizés van, mind a feleségemmel mind itt ezen kapom magam. Örülnék ha ez csitulna. Lehetetlen h ezt ne érezzék a közvetlen közelemben lévők.</p><p>A feladatat jövő hétre, h mi változott a kapcsolatomban ami azt eredményezte, h közeledtem a Dodóhoz, de erre nem tudok válaszolni. Értem a gondolatmenetet, de egészen biztos vagyok abban h a kettő között nincs ok-okozat. Attól még h különlegesek voltak a Dodós találkozók nem szerettem kevésbbé a feleségem és nem kerestem a Dodóban olyat amit a feleségemben nem találtam.</p><p>Nem hiszek lelki társakban. Hiszem h különböző emberekkel más és fantasztikus párkapcsolatunk lehetne, de a monogám kapcsolat alappillére, h egyet válasszunk. És felismerjük azt a láthatatlan határt ami kettesben tart minket és nem lépjük át.</p><p>Sessionök között:</p><p>A célja a terápiának fogalmazódott tovább bennem.</p><p>Eddig úgy fogalmaztam, h úgy érzem felrobbanna a szívem, ha esetleg újra találkoznék Dodóval. Nem tervezem, ez csak egy hipotetikus scenárió.</p><p>Egy olyan helyre szeretnék kerülni, amit érettnek és kiegyensúlyozottnak írnék le.</p><p>Egy belső nyugalmat érezni a döntésemmel kapcsolatosan és hálát a barátságáért, a közös emlékekért és azért, h szerethettem.</p>` },
+    { id:"r9", sessionNumber:9, date:"2026-09-02", title:"9. Alkalom", html:
+      `<p>Bebizonyosodott a megérzésem a mai alkalommal kapcsolatosan. Nem készültem fel annyiban, h nem csináltam "semmi idöt" elötte és még nem is sétalva jöttem, hanem kocsival. Lelkileg csak beestem és nem is tudtam kapcsolódni.</p><p>Gyakran támadva érzem magam ezek alatt (a feleségemmel való lelkizés során is) ami persze tudom h hülyeség, de az alatt az idö alatt amíg elmagyarázom magamnak h az én érdekemben vagyunk itt és a challengelés nem egyenlő a támadással, kipofozódom az egyensúlyból.</p><p>Nem igazán tudtam összeszedni, h Én mit gondolok bizonyos dolgokról, hanem csak h mit kellene gondolni azolról.</p><p>Elkezdem leírni az álmaim.</p>` }
+  ];
+
+  function seedEntries(){
+    return REAL_ENTRIES.slice();
+  }
+
+  function loadEntries(){
+    var raw = localStorage.getItem(STORAGE_KEY);
+    var list;
+    if(!raw){
+      list = seedEntries();
+    } else {
+      try{
+        list = JSON.parse(raw);
+        list.forEach(function(e){ if(typeof e.title==="undefined") e.title = null; });
+      }catch(e){
+        list = seedEntries();
+      }
+    }
+    // one-time cleanup: keep only the real journal entries, discard any
+    // test/placeholder entries created while trying the app out
+    if(!localStorage.getItem(MIGRATION_FLAG)){
+      list = seedEntries();
+      localStorage.setItem(MIGRATION_FLAG, "1");
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    return list;
+  }
+
+  function saveEntries(list){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  var entries = loadEntries();
+
+
+  /* ---------------- date helpers ---------------- */
+
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  function parseISO(iso){
+    var parts = iso.split("-");
+    return new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+  }
+  function ordinalSuffix(n){
+    var j = n % 10, k = n % 100;
+    if(j===1 && k!==11) return n+"st";
+    if(j===2 && k!==12) return n+"nd";
+    if(j===3 && k!==13) return n+"rd";
+    return n+"th";
+  }
+  function longDate(iso){
+    var d = parseISO(iso);
+    return MONTHS[d.getMonth()] + " " + ordinalSuffix(d.getDate());
+  }
+  function shortDate(iso){
+    var d = parseISO(iso);
+    return MONTHS_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+  }
+  function todayISO(){
+    var d = new Date();
+    var m = ("0"+(d.getMonth()+1)).slice(-2);
+    var day = ("0"+d.getDate()).slice(-2);
+    return d.getFullYear()+"-"+m+"-"+day;
+  }
+  function pad2(n){ return (n<10?"0":"")+n; }
+
+  /* ---------------- navigation ---------------- */
+
+  var screens = {};
+  ["unlock","home","entry","new"].forEach(function(k){ screens[k] = document.getElementById("screen-"+k); });
+
+  function showScreen(name){
+    Object.keys(screens).forEach(function(k){ screens[k].classList.toggle("active", k===name); });
+    window.scrollTo(0,0);
+  }
+
+  /* ---------------- staggered reveal ---------------- */
+
+  function sequenceReveal(elements, startDelay, stepDelay){
+    elements.forEach(function(el){ if(el) el.classList.remove("show"); });
+    requestAnimationFrame(function(){
+      elements.forEach(function(el, i){
+        if(!el) return;
+        setTimeout(function(){ el.classList.add("show"); }, startDelay + i*stepDelay);
+      });
+    });
+  }
+
+  /* ---------------- delete confirm ---------------- */
+
+  var confirmBackdrop = document.getElementById("confirm-backdrop");
+  var pendingDeleteId = null;
+
+  function openDeleteConfirm(id){
+    pendingDeleteId = id;
+    confirmBackdrop.classList.add("show");
+  }
+  function closeDeleteConfirm(){
+    confirmBackdrop.classList.remove("show");
+    pendingDeleteId = null;
+  }
+  document.getElementById("confirm-cancel-btn").addEventListener("click", closeDeleteConfirm);
+  confirmBackdrop.addEventListener("click", function(e){
+    if(e.target===confirmBackdrop) closeDeleteConfirm();
+  });
+  document.getElementById("confirm-delete-btn").addEventListener("click", performDelete);
+
+  function performDelete(){
+    var id = pendingDeleteId;
+    closeDeleteConfirm();
+    if(!id) return;
+    var cardEl = entryListEl.querySelector('.entry-card[data-id="'+id+'"]');
+    if(!cardEl){
+      entries = entries.filter(function(e){ return e.id!==id; });
+      saveEntries(entries);
+      renderHome(true);
+      return;
+    }
+    var wasCurrent = cardEl.classList.contains("current");
+    cardEl.style.pointerEvents = "none";
+    cardEl.style.transition = "opacity .75s var(--ease)";
+    cardEl.style.opacity = "0";
+    setTimeout(function(){
+      collapseAndRemove(cardEl, id, wasCurrent);
+    }, 700);
+  }
+
+  function collapseAndRemove(cardEl, id, wasCurrent){
+    // FIRST: record where every other card currently sits
+    var otherCards = Array.prototype.slice.call(entryListEl.querySelectorAll(".entry-card")).filter(function(c){ return c!==cardEl; });
+    var firstRects = otherCards.map(function(c){ return c.getBoundingClientRect(); });
+    var savedScrollTop = entryListWrap.scrollTop;
+    var prevSnapType = entryListWrap.style.scrollSnapType;
+    entryListWrap.style.scrollSnapType = "none"; // don't let the browser's own snap logic fight the animation
+
+    cardEl.remove();
+    entries = entries.filter(function(e){ return e.id!==id; });
+    saveEntries(entries);
+
+    if(entries.length===0){
+      entryListWrap.style.scrollSnapType = prevSnapType;
+      renderHome(true);
+      return;
+    }
+
+    entryListWrap.style.scrollBehavior = "auto";
+    entryListWrap.scrollTop = savedScrollTop; // pin it ourselves instead of letting the browser auto-clamp it
+
+    var newTopCard = wasCurrent ? entryListEl.querySelector(".entry-card") : null;
+
+    // LAST: measure the new positions, invert each card back to where it was
+    otherCards.forEach(function(c, i){
+      var newRect = c.getBoundingClientRect();
+      var deltaY = firstRects[i].top - newRect.top;
+      if(Math.abs(deltaY) > 0.5){
+        c.style.transition = "none";
+        c.style.transform = "translateY("+deltaY+"px)";
+      }
+    });
+
+    // PLAY: release the transform on the next frame so cards glide smoothly up
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        otherCards.forEach(function(c){
+          c.style.transition = "transform 1.4s var(--ease)";
+          c.style.transform = "";
+        });
+      });
+    });
+
+    setTimeout(function(){
+      otherCards.forEach(function(c){ c.style.transition = ""; c.style.transform = ""; });
+      entryListWrap.style.scrollSnapType = prevSnapType;
+      // only once the slide-up is fully settled, animate the color change
+      if(newTopCard){
+        setTimeout(function(){
+          newTopCard.classList.add("current");
+        }, 30);
+      }
+    }, 1500);
+  }
+
+  /* ---------------- toast ---------------- */
+
+  var toastEl = document.getElementById("toast");
+  var toastTimer;
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 1800);
+  }
+
+  /* ================= UNLOCK ================= */
+
+  var pinBuffer = "";
+  var pinDots = document.querySelectorAll("#pin-dots .pin-dot");
+  var unlockPrompt = document.getElementById("unlock-prompt");
+
+  function renderPinDots(state){
+    for(var i=0;i<4;i++){
+      pinDots[i].classList.remove("filled","error");
+      if(state==="error"){ pinDots[i].classList.add("error"); }
+      else if(i < pinBuffer.length){ pinDots[i].classList.add("filled"); }
+    }
+  }
+  function resetPin(){ pinBuffer = ""; renderPinDots(); }
+
+  document.getElementById("keypad").addEventListener("click", function(e){
+    var btn = e.target.closest(".key");
+    if(!btn) return;
+    var k = btn.getAttribute("data-k");
+    if(!k) return;
+    if(k==="back"){ pinBuffer = pinBuffer.slice(0,-1); renderPinDots(); return; }
+    if(pinBuffer.length>=4) return;
+    pinBuffer += k;
+    renderPinDots();
+    if(pinBuffer.length===4){ setTimeout(checkPin, 120); }
+  });
+
+  function checkPin(){
+    if(pinBuffer === PIN){
+      unlockPrompt.textContent = "Enter your 4-digit code";
+      showScreen("home");
+      animateHomeEntrance();
+      setTimeout(resetPin, 400);
+    } else {
+      renderPinDots("error");
+      unlockPrompt.textContent = "Incorrect code";
+      setTimeout(function(){ resetPin(); unlockPrompt.textContent = "Enter your 4-digit code"; }, 420);
+    }
+  }
+
+  function playUnlockIntro(){
+    var seq = [
+      document.getElementById("u-word"),
+      document.getElementById("u-sub"),
+      document.getElementById("unlock-prompt"),
+      document.getElementById("pin-dots")
+    ];
+    var digitOrder = ["1","2","3","4","5","6","7","8","9","0"];
+    digitOrder.forEach(function(d){
+      seq.push(document.querySelector('.key[data-k="'+d+'"]'));
+    });
+    seq.push(document.querySelector('.key[data-k="back"]'));
+    seq.forEach(function(el, i){
+      if(!el) return;
+      setTimeout(function(){ el.classList.add("show"); }, 160 + i*70);
+    });
+  }
+
+  /* ================= HOME ================= */
+
+  var entryListEl = document.getElementById("entry-list");
+  var entryListWrap = document.getElementById("entry-list-wrap");
+  var cardTransitioning = false;
+
+  function sortedEntries(){
+    return entries.slice().sort(function(a,b){
+      if(a.date !== b.date) return a.date < b.date ? 1 : -1;
+      return b.sessionNumber - a.sessionNumber;
+    });
+  }
+
+  function displayTitle(entry){
+    return (entry.title && entry.title.trim()) ? entry.title.trim() : null;
+  }
+
+  function buildCardEl(entry, isCurrent){
+    var card = document.createElement("div");
+    card.className = "entry-card" + (isCurrent ? " current" : "");
+    card.setAttribute("data-id", entry.id);
+    card.innerHTML =
+      '<div class="entry-num">'+pad2(entry.sessionNumber)+'</div>'+
+      '<div class="entry-date">'+longDate(entry.date)+'</div>'+
+      '<svg class="entry-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6l6 6-6 6"/></svg>';
+    attachCardGestures(card, entry.id);
+    return card;
+  }
+
+  function renderHome(skipEntrance, excludeIds){
+    var list = sortedEntries().filter(function(e){
+      return !excludeIds || excludeIds.indexOf(e.id)===-1;
+    });
+    entryListEl.innerHTML = "";
+    if(list.length===0){
+      var empty = document.createElement("div");
+      empty.className = "empty-home";
+      empty.textContent = "Nothing here yet. Tap + to write.";
+      entryListEl.appendChild(empty);
+      return;
+    }
+    list.forEach(function(entry, idx){
+      var card = buildCardEl(entry, idx===0);
+      if(!skipEntrance) card.classList.add("card-enter");
+      entryListEl.appendChild(card);
+    });
+  }
+
+  var LONG_PRESS_MS = 550;
+
+  function attachCardGestures(card, id){
+    var pressTimer = null;
+    var longPressFired = false;
+    var startX = 0, startY = 0;
+
+    function clearPress(){ clearTimeout(pressTimer); pressTimer = null; }
+
+    card.addEventListener("pointerdown", function(e){
+      if(cardTransitioning) return;
+      longPressFired = false;
+      startX = e.clientX; startY = e.clientY;
+      clearPress();
+      pressTimer = setTimeout(function(){
+        longPressFired = true;
+        if(navigator.vibrate) navigator.vibrate(12);
+        card.classList.remove("pressed");
+        openDeleteConfirm(id);
+      }, LONG_PRESS_MS);
+    });
+
+    card.addEventListener("pointermove", function(e){
+      if(!pressTimer) return;
+      if(Math.abs(e.clientX-startX) > 10 || Math.abs(e.clientY-startY) > 10){ clearPress(); }
+    });
+
+    card.addEventListener("pointerup", function(){
+      clearPress();
+      if(!longPressFired){ handleCardPress(card, id); }
+    });
+
+    card.addEventListener("pointercancel", clearPress);
+    card.addEventListener("pointerleave", clearPress);
+    card.addEventListener("contextmenu", function(e){ e.preventDefault(); });
+  }
+
+  function handleCardPress(card, id){
+    if(cardTransitioning) return;
+    cardTransitioning = true;
+    var allCards = entryListEl.querySelectorAll(".entry-card");
+    card.classList.add("pressed");
+    allCards.forEach(function(c){ if(c!==card) c.classList.add("dim"); });
+    setTimeout(function(){
+      openEntry(id);
+      showScreen("entry");
+      cardTransitioning = false;
+    }, 700);
+  }
+
+
+  function animateHomeEntrance(){
+    document.getElementById("h-word").classList.remove("show");
+    document.getElementById("h-sub").classList.remove("show");
+    var cards = entryListEl.querySelectorAll(".entry-card");
+    cards.forEach(function(c){ c.classList.remove("show"); });
+    requestAnimationFrame(function(){
+      setTimeout(function(){ document.getElementById("h-word").classList.add("show"); }, 60);
+      setTimeout(function(){ document.getElementById("h-sub").classList.add("show"); }, 150);
+      cards.forEach(function(c,i){
+        setTimeout(function(){ c.classList.add("show"); }, 260 + i*70);
+      });
+    });
+  }
+
+  document.getElementById("new-entry-btn").addEventListener("click", function(){
+    setTimeout(createNewEntry, 260);
+  });
+
+  function legacyCopy(text){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.top = "-1000px";
+    ta.style.left = "-1000px";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    var ok = false;
+    try{ ok = document.execCommand("copy"); }catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function htmlToPlainText(html){
+    var tmp = document.createElement("div");
+    tmp.innerHTML = html || "";
+    return tmp.textContent.replace(/\n{3,}/g, "\n\n").trim();
+  }
+
+  document.getElementById("copy-btn").addEventListener("click", function(){
+    var list = sortedEntries();
+    var blocks = list.map(function(e){
+      var header = longDate(e.date) + " — " + (displayTitle(e) || "Untitled");
+      var body = htmlToPlainText(e.html);
+      return body ? (header + "\n" + body) : header;
+    });
+    var text = blocks.join("\n\n");
+    if(navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext){
+      navigator.clipboard.writeText(text).then(function(){
+        showToast("Entries copied");
+      }).catch(function(){
+        showToast(legacyCopy(text) ? "Entries copied" : "Couldn't copy");
+      });
+    } else {
+      showToast(legacyCopy(text) ? "Entries copied" : "Couldn't copy");
+    }
+  });
+
+  /* ================= ENTRY VIEW / EDIT (existing) ================= */
+
+  var currentEntryId = null;
+  var isEditingBody = false;
+  var isEditingTitle = false;
+
+  var entryTitleText = document.getElementById("entry-title-text");
+  var entryShortdateText = document.getElementById("entry-shortdate-text");
+  var entryContentEl = document.getElementById("entry-content");
+
+  function findEntry(id){
+    for(var i=0;i<entries.length;i++){ if(entries[i].id===id) return entries[i]; }
+    return null;
+  }
+
+  function openEntry(id){
+    currentEntryId = id;
+    isEditingBody = false;
+    isEditingTitle = false;
+    var entry = findEntry(id);
+    if(!entry) return;
+    entryTitleText.textContent = displayTitle(entry) || "";
+    entryTitleText.setAttribute("data-placeholder", longDate(entry.date));
+    entryShortdateText.textContent = shortDate(entry.date);
+    entryContentEl.innerHTML = entry.html || "";
+    entryContentEl.contentEditable = "false";
+    entryTitleText.contentEditable = "false";
+    sequenceReveal([
+      document.getElementById("entry-back-btn"),
+      entryTitleText,
+      entryShortdateText,
+      document.getElementById("entry-divider-view"),
+      entryContentEl
+    ], 70, 90);
+  }
+
+  function enterBodyEdit(){
+    if(isEditingBody) return;
+    isEditingBody = true;
+    entryContentEl.contentEditable = "true";
+    entryContentEl.focus();
+    placeCursorAtEnd(entryContentEl);
+  }
+
+  function enterTitleEdit(){
+    if(isEditingTitle) return;
+    isEditingTitle = true;
+    entryTitleText.contentEditable = "true";
+    entryTitleText.focus();
+    placeCursorAtEnd(entryTitleText);
+  }
+
+  function saveAndExitEdits(){
+    var entry = findEntry(currentEntryId);
+    if(entry){
+      if(isEditingBody){ entry.html = entryContentEl.innerHTML; }
+      if(isEditingTitle){ entry.title = entryTitleText.textContent.trim() || null; }
+      saveEntries(entries);
+    }
+    isEditingBody = false;
+    isEditingTitle = false;
+    entryContentEl.contentEditable = "false";
+    entryTitleText.contentEditable = "false";
+    hideHlPopup();
+  }
+
+  entryContentEl.addEventListener("click", function(){ if(!isEditingBody) enterBodyEdit(); });
+  entryTitleText.addEventListener("click", function(e){ e.stopPropagation(); if(!isEditingTitle) enterTitleEdit(); });
+  entryTitleText.addEventListener("keydown", function(e){
+    if(e.key==="Enter"){ e.preventDefault(); entryTitleText.blur(); }
+  });
+  entryTitleText.addEventListener("blur", function(){
+    if(isEditingTitle) saveAndExitEdits();
+  });
+  entryContentEl.addEventListener("blur", function(){
+    if(isEditingBody && !isEditingTitle) saveAndExitEdits();
+  });
+
+  document.getElementById("entry-back-btn").addEventListener("click", function(){
+    if(isEditingBody || isEditingTitle){ saveAndExitEdits(); return; }
+    renderHome();
+    animateHomeEntrance();
+    showScreen("home");
+  });
+
+  function placeCursorAtEnd(el){
+    var range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  /* ================= NEW ENTRY ================= */
+
+  var newTitleEl = document.getElementById("new-title-text");
+  var newContentEl = document.getElementById("new-content");
+  var newShortdateText = document.getElementById("new-shortdate-text");
+  var pendingNewEntry = null;
+
+  function nextSessionNumber(){
+    var max = -1;
+    entries.forEach(function(e){ if(e.sessionNumber>max) max=e.sessionNumber; });
+    return max+1;
+  }
+
+  function createNewEntry(){
+    var iso = todayISO();
+    pendingNewEntry = { id:"e"+Date.now(), sessionNumber: nextSessionNumber(), date: iso, title:null, html:"" };
+    newShortdateText.textContent = shortDate(iso);
+    newTitleEl.textContent = "";
+    newContentEl.innerHTML = "";
+    showScreen("new");
+    sequenceReveal([
+      document.getElementById("new-back-btn"),
+      newShortdateText,
+      newTitleEl,
+      document.getElementById("new-done-btn"),
+      document.getElementById("new-divider"),
+      newContentEl
+    ], 70, 90);
+    setTimeout(function(){ newTitleEl.focus(); }, 260);
+  }
+
+  newTitleEl.addEventListener("keydown", function(e){
+    if(e.key==="Enter"){ e.preventDefault(); newContentEl.focus(); }
+  });
+
+  function saveNewEntryAndClose(){
+    if(!pendingNewEntry){
+      showScreen("home");
+      return;
+    }
+    var t = newTitleEl.textContent.trim();
+    pendingNewEntry.title = t || null;
+    pendingNewEntry.html = newContentEl.innerHTML.trim();
+    var newEntry = pendingNewEntry;
+    pendingNewEntry = null;
+
+    entries.push(newEntry);
+    saveEntries(entries);
+
+    // show home with everything except the new entry, already in place (no re-entrance slide)
+    renderHome(true, [newEntry.id]);
+    entryListWrap.style.scrollBehavior = "auto";
+    entryListWrap.scrollTop = 0;
+    showScreen("home");
+
+    setTimeout(function(){ growInNewCard(newEntry); }, 320);
+  }
+
+  var CARD_SHIFT_PX = 74; // every card is a fixed 64px + 10px gap, always — no measurement needed
+
+  function growInNewCard(entry){
+    var emptyMsg = entryListEl.querySelector(".empty-home");
+    if(emptyMsg) emptyMsg.remove();
+
+    entryListWrap.style.scrollBehavior = "auto"; // force an instant reset, not an animated one
+    entryListWrap.scrollTop = 0;
+    var prevSnapType = entryListWrap.style.scrollSnapType;
+    entryListWrap.style.scrollSnapType = "none"; // don't let the browser's own snap logic fight the animation
+
+    var existingCards = Array.prototype.slice.call(entryListEl.querySelectorAll(".entry-card"));
+
+    var isTop = sortedEntries()[0] && sortedEntries()[0].id===entry.id;
+    var card = buildCardEl(entry, isTop);
+    card.style.opacity = "0";
+
+    if(!isTop){
+      entryListEl.appendChild(card);
+      setTimeout(function(){
+        card.scrollIntoView({behavior:"smooth", block:"nearest"});
+        card.style.transition = "opacity .7s var(--ease)";
+        card.style.opacity = "1";
+        entryListWrap.style.scrollSnapType = prevSnapType;
+      }, 40);
+      return;
+    }
+
+    entryListEl.insertBefore(card, entryListEl.firstChild || null);
+    var prevCurrent = entryListEl.querySelector(".entry-card.current[data-id]:not([data-id='"+entry.id+"'])");
+    if(prevCurrent) prevCurrent.classList.remove("current");
+
+    // shift every existing card back up by exactly one card-slot (a known,
+    // fixed constant) so visually nothing has moved yet
+    existingCards.forEach(function(c){
+      c.style.transition = "none";
+      c.style.transform = "translateY(-"+CARD_SHIFT_PX+"px)";
+    });
+
+    // force a synchronous style flush so that shifted-up state is actually
+    // committed and painted before we start transitioning away from it
+    void entryListEl.offsetHeight;
+
+    // PHASE 1: slide the existing cards down first, opening up the space
+    var SLIDE_MS = 1300;
+    setTimeout(function(){
+      entryListWrap.scrollTop = 0; // re-pin in case anything nudged it during phase 1
+      existingCards.forEach(function(c){
+        c.style.transition = "transform "+SLIDE_MS+"ms var(--ease)";
+        c.style.transform = "";
+      });
+    }, 40);
+
+    // PHASE 2: once the space has opened up, fade the new card into it
+    setTimeout(function(){
+      entryListWrap.scrollTop = 0; // re-pin right before the fade-in, so it can't be scrolled out of view
+      card.style.transition = "opacity 1s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease)";
+      card.style.opacity = "1";
+    }, 40 + SLIDE_MS + 60);
+
+    setTimeout(function(){
+      existingCards.forEach(function(c){ c.style.transition = ""; c.style.transform = ""; });
+      card.style.transition = "";
+      card.style.opacity = "1"; // guarantee it ends up visible even if an earlier step got skipped
+      entryListWrap.style.scrollSnapType = prevSnapType;
+    }, 40 + SLIDE_MS + 60 + 1050);
+  }
+
+  document.getElementById("new-back-btn").addEventListener("click", saveNewEntryAndClose);
+  document.getElementById("new-done-btn").addEventListener("click", saveNewEntryAndClose);
+
+  /* ================= HIGHLIGHTING ================= */
+
+  var hlPopup = document.getElementById("hl-popup");
+  var activeHlContainer = null;
+  var savedRangeForHl = null;
+
+  function hideHlPopup(){ hlPopup.classList.remove("show"); savedRangeForHl = null; }
+
+  function isEntirelyInsideMark(range){
+    var node = range.commonAncestorContainer;
+    while(node && node !== document.body){
+      if(node.nodeType===1 && node.tagName==="MARK") return node;
+      node = node.parentNode;
+    }
+    return null;
+  }
+
+  function handleSelectionChange(){
+    var sel = window.getSelection();
+    if(!sel || sel.rangeCount===0 || sel.isCollapsed){ hideHlPopup(); return; }
+    var range = sel.getRangeAt(0);
+    var container = range.commonAncestorContainer;
+    var el = container.nodeType===1 ? container : container.parentNode;
+    var host = el.closest ? el.closest(".entry-content") : null;
+    if(!host){ hideHlPopup(); return; }
+    activeHlContainer = host;
+    savedRangeForHl = range.cloneRange();
+    var markAncestor = isEntirelyInsideMark(range);
+    hlPopup.textContent = markAncestor ? "Unhighlight" : "Highlight";
+    var rect = range.getBoundingClientRect();
+    if(rect.width===0 && rect.height===0){ hideHlPopup(); return; }
+    hlPopup.style.left = (rect.left + rect.width/2) + "px";
+    hlPopup.style.top = rect.top + "px";
+    hlPopup.classList.add("show");
+  }
+
+  document.addEventListener("selectionchange", function(){
+    clearTimeout(window.__hlDebounce);
+    window.__hlDebounce = setTimeout(handleSelectionChange, 30);
+  });
+
+  hlPopup.addEventListener("mousedown", function(e){ e.preventDefault(); });
+  hlPopup.addEventListener("click", function(){
+    if(!savedRangeForHl || !activeHlContainer) return;
+    var range = savedRangeForHl;
+    var markAncestor = isEntirelyInsideMark(range);
+    if(markAncestor){ unwrapMark(markAncestor); } else { wrapRangeInMark(range); }
+    persistActiveContainer();
+    window.getSelection().removeAllRanges();
+    hideHlPopup();
+  });
+
+  function wrapRangeInMark(range){
+    try{
+      var mark = document.createElement("mark");
+      mark.className = "hl";
+      range.surroundContents(mark);
+    }catch(e){
+      var frag = range.extractContents();
+      var mark2 = document.createElement("mark");
+      mark2.className = "hl";
+      mark2.appendChild(frag);
+      range.insertNode(mark2);
+    }
+  }
+
+  function unwrapMark(mark){
+    var parent = mark.parentNode;
+    while(mark.firstChild){ parent.insertBefore(mark.firstChild, mark); }
+    parent.removeChild(mark);
+    parent.normalize();
+  }
+
+  function persistActiveContainer(){
+    if(!activeHlContainer) return;
+    if(activeHlContainer.id==="new-content") return;
+    if(activeHlContainer.id==="entry-content" && currentEntryId){
+      var entry = findEntry(currentEntryId);
+      if(entry){ entry.html = entryContentEl.innerHTML; saveEntries(entries); }
+    }
+  }
+
+  /* ================= init ================= */
+
+  renderHome();
+  renderPinDots();
+  playUnlockIntro();
+
+})();
+</script>
+</body>
+</html>
