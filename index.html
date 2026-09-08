@@ -106,15 +106,15 @@
   }
   .keypad{
     display:grid;
-    grid-template-columns:repeat(3, 58px);
-    gap:12px 16px;
+    grid-template-columns:repeat(3, 64px);
+    gap:14px 18px;
     justify-content:center;
   }
   .key{
-    width:58px; height:58px;
+    width:64px; height:64px;
     border-radius:50%;
     background:var(--card-normal);
-    font-size:21px;
+    font-size:23px;
     font-family:'Inter',sans-serif;
     font-weight:500;
     color:var(--black);
@@ -163,7 +163,7 @@
     -webkit-overflow-scrolling:touch;
     scroll-snap-type:y proximity;
     scroll-behavior:smooth;
-    margin-top:49px; /* pushes the whole list down by one card-slot minus a 25px raise */
+    margin-top:44px; /* pushes the whole list down by one card-slot minus a 30px raise */
     height:434px; /* exactly 6 cards (64px) + 5 gaps (10px), fixed regardless of entry count */
     scrollbar-width:none; /* Firefox */
     -ms-overflow-style:none; /* legacy Edge */
@@ -228,7 +228,7 @@
   .fab{
     position:absolute;
     left:50%;
-    bottom:calc(47px + env(safe-area-inset-bottom,0px));
+    bottom:calc(42px + env(safe-area-inset-bottom,0px));
     transform:translateX(-50%);
     width:64px; height:64px;
     border-radius:50%;
