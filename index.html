@@ -106,15 +106,15 @@
   }
   .keypad{
     display:grid;
-    grid-template-columns:repeat(3, 64px);
-    gap:14px 18px;
+    grid-template-columns:repeat(3, 70px);
+    gap:16px 20px;
     justify-content:center;
   }
   .key{
-    width:64px; height:64px;
+    width:70px; height:70px;
     border-radius:50%;
     background:var(--card-normal);
-    font-size:23px;
+    font-size:25px;
     font-family:'Inter',sans-serif;
     font-weight:500;
     color:var(--black);
@@ -163,7 +163,7 @@
     -webkit-overflow-scrolling:touch;
     scroll-snap-type:y proximity;
     scroll-behavior:smooth;
-    margin-top:44px; /* pushes the whole list down by one card-slot minus a 30px raise */
+    margin-top:39px; /* pushes the whole list down by one card-slot minus a 35px raise */
     height:434px; /* exactly 6 cards (64px) + 5 gaps (10px), fixed regardless of entry count */
     scrollbar-width:none; /* Firefox */
     -ms-overflow-style:none; /* legacy Edge */
@@ -228,7 +228,7 @@
   .fab{
     position:absolute;
     left:50%;
-    bottom:calc(42px + env(safe-area-inset-bottom,0px));
+    bottom:calc(32px + env(safe-area-inset-bottom,0px));
     transform:translateX(-50%);
     width:64px; height:64px;
     border-radius:50%;
@@ -299,7 +299,7 @@
     line-height:1.7;
     color:var(--black);
     outline:none;
-    padding-bottom:40px;
+    padding-bottom:140px; /* ~3 empty lines' worth of space, including normal paragraph spacing — always there, regardless of what's actually typed in the entry */
     min-height:200px;
   }
   .entry-content p{margin:0 0 20px;}
@@ -328,21 +328,21 @@
     font-weight:500;
     padding:9px 16px;
     border-radius:20px;
-    transform:translate(-50%,-100%) translateY(-10px) scale(0.9);
+    transform:translate(-50%,0) translateY(10px) scale(0.9);
     opacity:0;
     pointer-events:none;
     transition:opacity .15s var(--ease), transform .15s var(--ease);
     z-index:50;
     white-space:nowrap;
   }
-  .hl-popup.show{opacity:1; transform:translate(-50%,-100%) translateY(-10px) scale(1); pointer-events:auto;}
+  .hl-popup.show{opacity:1; transform:translate(-50%,0) translateY(10px) scale(1); pointer-events:auto;}
   .hl-popup::after{
     content:"";
     position:absolute;
-    left:50%; top:100%;
+    left:50%; bottom:100%;
     transform:translateX(-50%);
     border:5px solid transparent;
-    border-top-color:var(--black);
+    border-bottom-color:var(--black);
   }
 
   /* toast */
@@ -1239,7 +1239,7 @@
     var rect = range.getBoundingClientRect();
     if(rect.width===0 && rect.height===0){ hideHlPopup(); return; }
     hlPopup.style.left = (rect.left + rect.width/2) + "px";
-    hlPopup.style.top = rect.top + "px";
+    hlPopup.style.top = rect.bottom + "px";
     hlPopup.classList.add("show");
   }
 
