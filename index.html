@@ -90,26 +90,31 @@
     margin-bottom:22px;
     letter-spacing:0.01em;
   }
-  .pin-dots{display:flex; gap:16px; margin-bottom:40px;}
+  .pin-dots{display:flex; gap:16px; margin-bottom:32px;}
   .pin-dot{
     width:14px; height:14px; border-radius:50%;
     border:1.5px solid var(--black);
     background:transparent;
     transition:background .18s var(--ease), border-color .18s var(--ease);
   }
-  .pin-dot.filled{background:var(--black); border-color:var(--black);}
+  .pin-dot.filled{background:var(--black); border-color:var(--black); animation:dotFillIn .34s var(--ease);}
   .pin-dot.error{border-color:var(--orange); background:var(--orange);}
+  @keyframes dotFillIn{
+    0%{transform:scale(0.3); opacity:0;}
+    60%{transform:scale(1.15); opacity:1;}
+    100%{transform:scale(1); opacity:1;}
+  }
   .keypad{
     display:grid;
-    grid-template-columns:repeat(3, 74px);
-    gap:18px 22px;
+    grid-template-columns:repeat(3, 58px);
+    gap:12px 16px;
     justify-content:center;
   }
   .key{
-    width:74px; height:74px;
+    width:58px; height:58px;
     border-radius:50%;
     background:var(--card-normal);
-    font-size:26px;
+    font-size:21px;
     font-family:'Inter',sans-serif;
     font-weight:500;
     color:var(--black);
@@ -131,14 +136,14 @@
   .home-wordmark .wordmark{
     font-family:'Fraunces',serif;
     font-weight:500;
-    font-size:30px;
+    font-size:42px;
     line-height:1;
     letter-spacing:-0.02em;
   }
   .home-wordmark .sub{
     font-family:'Fraunces',serif;
     font-style:italic;
-    font-size:14px;
+    font-size:19.6px;
     color:var(--orange);
     margin-top:3px;
   }
@@ -158,7 +163,8 @@
     -webkit-overflow-scrolling:touch;
     scroll-snap-type:y proximity;
     scroll-behavior:smooth;
-    height:508px; /* exactly 7 cards (64px) + 6 gaps (10px), fixed regardless of entry count */
+    margin-top:49px; /* pushes the whole list down by one card-slot minus a 25px raise */
+    height:434px; /* exactly 6 cards (64px) + 5 gaps (10px), fixed regardless of entry count */
     scrollbar-width:none; /* Firefox */
     -ms-overflow-style:none; /* legacy Edge */
   }
@@ -199,7 +205,7 @@
     flex-shrink:0;
     color:var(--black);
   }
-  .entry-card.current .entry-num{color:#FBEAE3;}
+  .entry-card.current .entry-num{color:#FFFFFF;}
   .entry-date{
     font-family:'Inter',sans-serif;
     font-weight:500;
@@ -222,7 +228,7 @@
   .fab{
     position:absolute;
     left:50%;
-    bottom:calc(22px + env(safe-area-inset-bottom,0px));
+    bottom:calc(47px + env(safe-area-inset-bottom,0px));
     transform:translateX(-50%);
     width:64px; height:64px;
     border-radius:50%;
@@ -289,7 +295,7 @@
 
   .entry-content{
     font-family:'Source Serif 4', serif;
-    font-size:16.5px;
+    font-size:15px;
     line-height:1.7;
     color:var(--black);
     outline:none;
@@ -388,9 +394,9 @@
   }
   .confirm-backdrop.show .confirm-sheet{transform:scale(1) translateY(0);}
   .confirm-title{
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:19px;
+    font-family:'Inter',sans-serif;
+    font-weight:700;
+    font-size:15px;
     line-height:1.4;
     color:var(--black);
     margin-bottom:22px;
@@ -467,10 +473,10 @@
       <button class="icon-btn back fade-step" id="entry-back-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
       </button>
-      <div class="entry-shortdate fade-step" id="entry-shortdate-text"></div>
     </div>
     <div class="entry-title-row">
       <div class="entry-title fade-step" id="entry-title-text" data-placeholder="Untitled"></div>
+      <div class="entry-shortdate fade-step" id="entry-shortdate-text"></div>
     </div>
     <div class="entry-divider divider-step" id="entry-divider-view"></div>
     <div class="entry-content fade-step" id="entry-content" data-placeholder="Write what's on your mind..."></div>
@@ -484,13 +490,13 @@
       <button class="icon-btn back fade-step" id="new-back-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
       </button>
-      <div class="entry-shortdate fade-step" id="new-shortdate-text"></div>
-    </div>
-    <div class="entry-title-row">
-      <div class="entry-title fade-step" id="new-title-text" contenteditable="true" data-placeholder="New Entry"></div>
       <button class="done-btn fade-step" id="new-done-btn" aria-label="Done">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12l6 6L20 6"/></svg>
       </button>
+    </div>
+    <div class="entry-title-row">
+      <div class="entry-title fade-step" id="new-title-text" contenteditable="true" data-placeholder="New Entry"></div>
+      <div class="entry-shortdate fade-step" id="new-shortdate-text"></div>
     </div>
     <div class="entry-divider divider-step" id="new-divider"></div>
     <div class="entry-content fade-step" id="new-content" contenteditable="true" data-placeholder="Write what's on your mind..."></div>
@@ -744,9 +750,17 @@
 
   function renderPinDots(state){
     for(var i=0;i<4;i++){
-      pinDots[i].classList.remove("filled","error");
-      if(state==="error"){ pinDots[i].classList.add("error"); }
-      else if(i < pinBuffer.length){ pinDots[i].classList.add("filled"); }
+      if(state==="error"){
+        pinDots[i].classList.remove("filled");
+        pinDots[i].classList.add("error");
+      } else {
+        pinDots[i].classList.remove("error");
+        if(i < pinBuffer.length){
+          if(!pinDots[i].classList.contains("filled")){ pinDots[i].classList.add("filled"); }
+        } else {
+          pinDots[i].classList.remove("filled");
+        }
+      }
     }
   }
   function resetPin(){ pinBuffer = ""; renderPinDots(); }
@@ -758,6 +772,7 @@
     if(!k) return;
     if(k==="back"){ pinBuffer = pinBuffer.slice(0,-1); renderPinDots(); return; }
     if(pinBuffer.length>=4) return;
+    if(pinBuffer.length===0){ unlockPrompt.classList.remove("show"); }
     pinBuffer += k;
     renderPinDots();
     if(pinBuffer.length===4){ setTimeout(checkPin, 120); }
@@ -772,6 +787,7 @@
     } else {
       renderPinDots("error");
       unlockPrompt.textContent = "Incorrect code";
+      unlockPrompt.classList.add("show");
       setTimeout(function(){ resetPin(); unlockPrompt.textContent = "Enter your 4-digit code"; }, 420);
     }
   }
@@ -1059,11 +1075,18 @@
   }
 
   function createNewEntry(){
-    var iso = todayISO();
-    pendingNewEntry = { id:"e"+Date.now(), sessionNumber: nextSessionNumber(), date: iso, title:null, html:"" };
-    newShortdateText.textContent = shortDate(iso);
-    newTitleEl.textContent = "";
-    newContentEl.innerHTML = "";
+    if(pendingNewEntry){
+      // resume the draft left behind by the back button, exactly as it was
+      newShortdateText.textContent = shortDate(pendingNewEntry.date);
+      newTitleEl.textContent = pendingNewEntry.title || "";
+      newContentEl.innerHTML = pendingNewEntry.html || "";
+    } else {
+      var iso = todayISO();
+      pendingNewEntry = { id:"e"+Date.now(), sessionNumber: nextSessionNumber(), date: iso, title:null, html:"" };
+      newShortdateText.textContent = shortDate(iso);
+      newTitleEl.textContent = "";
+      newContentEl.innerHTML = "";
+    }
     showScreen("new");
     sequenceReveal([
       document.getElementById("new-back-btn"),
@@ -1171,7 +1194,17 @@
     }, 40 + SLIDE_MS + 60 + 1050);
   }
 
-  document.getElementById("new-back-btn").addEventListener("click", saveNewEntryAndClose);
+  function saveDraftAndGoHome(){
+    if(pendingNewEntry){
+      var t = newTitleEl.textContent.trim();
+      pendingNewEntry.title = t || null;
+      pendingNewEntry.html = newContentEl.innerHTML.trim();
+    }
+    showScreen("home");
+    animateHomeEntrance();
+  }
+
+  document.getElementById("new-back-btn").addEventListener("click", saveDraftAndGoHome);
   document.getElementById("new-done-btn").addEventListener("click", saveNewEntryAndClose);
 
   /* ================= HIGHLIGHTING ================= */
