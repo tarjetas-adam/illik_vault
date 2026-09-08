@@ -299,8 +299,12 @@
     line-height:1.7;
     color:var(--black);
     outline:none;
-    padding-bottom:140px; /* ~3 empty lines' worth of space, including normal paragraph spacing — always there, regardless of what's actually typed in the entry */
     min-height:200px;
+    flex-shrink:0;
+  }
+  .entry-end-spacer{
+    height:140px; /* ~3 empty lines' worth of space, as a real block, so the end of every entry is comfortable to read when scrolled to */
+    flex-shrink:0;
   }
   .entry-content p{margin:0 0 20px;}
   .entry-content p:last-child{margin-bottom:0;}
@@ -480,6 +484,7 @@
     </div>
     <div class="entry-divider divider-step" id="entry-divider-view"></div>
     <div class="entry-content fade-step" id="entry-content" data-placeholder="Write what's on your mind..."></div>
+    <div class="entry-end-spacer" aria-hidden="true"></div>
     <div class="safe-bottom"></div>
   </div>
 
@@ -500,6 +505,7 @@
     </div>
     <div class="entry-divider divider-step" id="new-divider"></div>
     <div class="entry-content fade-step" id="new-content" contenteditable="true" data-placeholder="Write what's on your mind..."></div>
+    <div class="entry-end-spacer" aria-hidden="true"></div>
     <div class="safe-bottom"></div>
   </div>
 
