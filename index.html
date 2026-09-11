@@ -126,7 +126,7 @@
   .key.ghost{background:transparent; box-shadow:none;}
 
   /* ---------- HOME ---------- */
-  #screen-home{padding:0 22px;}
+  #screen-home{padding:0 22px; overflow-y:auto; -webkit-overflow-scrolling:touch;}
   .home-header{
     display:flex;
     align-items:flex-start;
@@ -228,7 +228,7 @@
   .fab{
     position:absolute;
     left:50%;
-    bottom:calc(32px + env(safe-area-inset-bottom,0px));
+    bottom:calc(56px + env(safe-area-inset-bottom,0px));
     transform:translateX(-50%);
     width:64px; height:64px;
     border-radius:50%;
