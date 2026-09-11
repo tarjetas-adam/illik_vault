@@ -257,6 +257,7 @@
     padding:22px 0 16px;
   }
   .icon-btn.back{width:22px; height:22px; color:var(--black); flex-shrink:0;}
+  .entry-body{ display:block; }
   .entry-title-row{
     display:flex;
     align-items:center;
@@ -478,13 +479,15 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
       </button>
     </div>
-    <div class="entry-title-row">
-      <div class="entry-title fade-step" id="entry-title-text" data-placeholder="Untitled"></div>
-      <div class="entry-shortdate fade-step" id="entry-shortdate-text"></div>
+    <div class="entry-body" id="entry-body">
+      <div class="entry-title-row">
+        <div class="entry-title fade-step" id="entry-title-text" data-placeholder="Untitled"></div>
+        <div class="entry-shortdate fade-step" id="entry-shortdate-text"></div>
+      </div>
+      <div class="entry-divider divider-step" id="entry-divider-view"></div>
+      <div class="entry-content fade-step" id="entry-content" data-placeholder="Write what's on your mind..."></div>
+      <div class="entry-end-spacer" aria-hidden="true"></div>
     </div>
-    <div class="entry-divider divider-step" id="entry-divider-view"></div>
-    <div class="entry-content fade-step" id="entry-content" data-placeholder="Write what's on your mind..."></div>
-    <div class="entry-end-spacer" aria-hidden="true"></div>
     <div class="safe-bottom"></div>
   </div>
 
@@ -530,7 +533,7 @@
 
   var STORAGE_KEY = "illikVaultEntries";
   var PIN = "2258";
-  var MIGRATION_FLAG = "illikVaultCleanupV3";
+  var MIGRATION_FLAG = "illikVaultCleanupV4";
 
   /* ---------------- data ---------------- */
 
@@ -548,11 +551,11 @@
     { id:"r6", sessionNumber:6, date:"2026-08-05", title:"6. Alkalom", html:
       `<p>A könyv 6-7. fejezeténél vagyok. Mondtam, h el fogom olvasni, de szerintem nem fog segíteni eldönteni milyen irányba menjünk. Örülnék a segítségének a döntésben.</p><p>Csapongó session volt. Hiányzott nekem a fókusz, mint a múltkorinál.</p><p>A második felében Dodóról beszéltünk.</p><p>Frusztráltságot eredményez, h nem osztottam meg még vele az egész Dodós storyt az elejétől a végéig részletesen. Így amikor ki-be ugrálunk ismétlődőnek érzem a kontextus adást.</p><p>Emellett a ami napig nyugtalanságot eredményez ennek az újra és újra felelevenítése.</p><p>A gyászfeldolgozás során "magunk mögé" tudjuk tenni vajon? Nem elnyomni akarom, de célszerünek gondolnám, ha tudnánk húzni egy vonalat és nem csak csámcsogunk rajta.</p><p>Mai napig elítélem magam azért a gondolatérr amit a pszichológusnak is megírtam: "ha pozitív lenne Dodó reakciója, nehéz lenne benne maradni a házasságomban"</p><p>Szívesen visszavenném, de így éreztem egy ponton és a mai napig nem tudnék teljes vállszélességgel beleállni az ellenkezőbe.</p><p>És nehéz összeegyeztetnem azzal, h olyan férfi szeretnék lenni aki válasz nélkül is megnyugvást tud találni a döntésében.</p><p>El szeretnék jutni egy olyan szintre, h egy esetleges találkozó esetén ne gondoljam, h felrobbanna a szívem.</p><p>A következő alkalom elején ezt megosztanám, beszélnék a könyvről és eltervezném a gyászfeldolgozás 7!!! alkalmas folyamatást.</p><p>Mennyivel vagyunk beljebb: 2.5/10</p><p>Közben befejeztem a könyvet.</p><p>Az elöbb is úgy fogalmaztam, h "magam mögé szeretném tenni", vagy "túl akarok lépni rajta".</p><p>A könyv filizófiája az, h eltávolodik ettől a hozzáállástól.</p><p>"A cél az, hogy annyira feldolgozzuk a fájdalmat, hogy emlékezni tudjunk a kapcsolatra anélkül, hogy a gyász elárasztana minket."</p><p>Szívesen tartanék itt.</p><p>E mellett apummal kapcsolatosan is gondolkodtam főleg anyum miatt és mivel sok időt töltök mostanában a testvérem családjával.</p><p>Egy pillanatra megkérdőjeleződött bennem, h nekem kellene-e felvennem vele a kapcsolatot.</p><p>DE</p><p>Én tisztán jeleztem, h úgy ahogy eddig volt nem szeretném folytatni a kapcsolatunkat.</p><p>Ha neki oké, h elveszíti a fiát akkor nekem amúgy sincs miért kűzdenem.</p><p>Ha pedig nem szeretne elveszíteni, akkor változnia kell.</p>` },
     { id:"r7", sessionNumber:7, date:"2026-08-19", title:"7. Alkalom", html:
-      `<p>Faszom.</p><p>Hiányos az érzelmi szótáram ahhoz, h kifejezzem, h hogyan távoztam a mai alkalomról. Talán a feldúlt a legjobb szavam rá.</p><p>Megosztottam a vault bejegyzésem és folytattuk ahol a múltkor abbahagytuk. Párhuzamosan próbálom időrendbe helyezni a Dodóval való kapcsolatom a Piciével amibe könnyű belebonyolodni.</p><p>Nehéz újra megélni, h mennyire rossz döntéseket hoztam és helytelenül cselekedtem ebben a helyzetben.</p><p>Már feljegyeztem, h férfiként fel kellett volna ismernem a helyzetet ami megelőzte h beleszeressek Dodóba, de nem emiatt érzem magam szar embernek.</p><p>Akárkivel megtörténhet, h beleszeret valaki másba.</p><p>A kérdés az h mit kezdünk ezzel és hogyan cselekszünk és kommunikálunk.</p><p>Én elnyontam mind a sajá érzéseim mind a feleségemét.</p><p>A session végén azon akadt fenn érthető módon a pszichológus, h amikor kiderült, h a feleségem is beleszeretett régebben valaki másba, ez az információ mennyire hidegen hagyott.</p><p>Hát igen. Nem ez a legvonzóbb tulajdonságom.</p><p>A mai napig elhitetem magammal, h -bár fantasztikus a párom- igazából elég vagyok önmagamnak.</p><p>Innen folytatjuk jövő héten.</p>` },
+      `<p>Faszom.</p><p>Hiányos az érzelmi szótáram ahhoz, h kifejezzem, h hogyan távoztam a mai alkalomról. Talán a feldúlt a legjobb szavam rá.</p><p>Megosztottam a vault bejegyzésem és folytattuk ahol a múltkor abbahagytuk. Párhuzamosan próbálom időrendbe helyezni a Dodóval való kapcsolatom a Piciével amibe könnyű belebonyolodni.</p><p>Nehéz újra megélni, h mennyire rossz döntéseket hoztam és helytelenül cselekedtem ebben a helyzetben.</p><p>Már feljegyeztem, h férfiként fel kellett volna ismernem a helyzetet ami megelőzte h beleszeressek Dodóba, de nem emiatt érzem magam szar embernek.</p><p>Akárkivel megtörténhet, h beleszeret valaki másba.</p><p>A kérdés az h mit kezdünk ezzel és hogyan cselekszünk és kommunikálunk.</p><p>Én elnyontam mind a sajá érzéseim mind a feleségemét.</p><p>A session végén azon akadt fenn érthető módon a pszichológus, h amikor kiderült, h a feleségem is beleszeretett régebben valaki másba, ez az információ mennyire hidegen hagyott.</p><p>Hát igen. Nem ez a legvonzóbb tulajdonságom.</p><p><mark class="hl">A mai napig elhitetem magammal, h -bár fantasztikus a párom- igazából elég vagyok önmagamnak.</mark></p><p>Innen folytatjuk jövő héten.</p>` },
     { id:"r8", sessionNumber:8, date:"2026-08-26", title:"8. Alkalom", html:
-      `<p>Azon kapom magamat az alkalmak során, h akármikor nem arról beszélünk amiért jöttem, Dodóról, hanem apumról, gyerekkoromról vagy h milyen minták alapján formálódik a férfi szerepem ránézek az órára és számolgatom h még mennyi időnk van a lényegről beszélni, közepesen figyelek oda a szessionre és frusztrált leszek.</p><p>Abban a pillanatban lejátszódik bennem, h ez mind része a csomagnak és a végcélt szolgálja, össze fognak érni a szálak, de azért legközelebb el fogom forgatni az órát.</p><p>A "frusztrált vagyok" visszatérő kifejezés ami a hétköznapokban egyáltalán nem jellemez, de akármikor lelkizés van, mind a feleségemmel mind itt ezen kapom magam. Örülnék ha ez csitulna. Lehetetlen h ezt ne érezzék a közvetlen közelemben lévők.</p><p>A feladatat jövő hétre, h mi változott a kapcsolatomban ami azt eredményezte, h közeledtem a Dodóhoz, de erre nem tudok válaszolni. Értem a gondolatmenetet, de egészen biztos vagyok abban h a kettő között nincs ok-okozat. Attól még h különlegesek voltak a Dodós találkozók nem szerettem kevésbbé a feleségem és nem kerestem a Dodóban olyat amit a feleségemben nem találtam.</p><p>Nem hiszek lelki társakban. Hiszem h különböző emberekkel más és fantasztikus párkapcsolatunk lehetne, de a monogám kapcsolat alappillére, h egyet válasszunk. És felismerjük azt a láthatatlan határt ami kettesben tart minket és nem lépjük át.</p>` },
-    { id:"r8b", sessionNumber:9, date:"2026-09-01", title:"9. Alkalom", html:
-      `<p>Sessionök között:</p><p>A célja a terápiának fogalmazódott tovább bennem.</p><p>Eddig úgy fogalmaztam, h úgy érzem felrobbanna a szívem, ha esetleg újra találkoznék Dodóval. Nem tervezem, ez csak egy hipotetikus scenárió.</p><p>Egy olyan helyre szeretnék kerülni, amit érettnek és kiegyensúlyozottnak írnék le.</p><p>Egy belső nyugalmat érezni a döntésemmel kapcsolatosan és hálát a barátságáért, a közös emlékekért és azért, h szerethettem.</p>` },
+      `<p>Azon kapom magamat az alkalmak során, h akármikor nem arról beszélünk amiért jöttem, Dodóról, hanem apumról, gyerekkoromról vagy h milyen minták alapján formálódik a férfi szerepem ránézek az órára és számolgatom h még mennyi időnk van a lényegről beszélni, közepesen figyelek oda a szessionre és frusztrált leszek.</p><p>Abban a pillanatban lejátszódik bennem, h ez mind része a csomagnak és a végcélt szolgálja, össze fognak érni a szálak, de azért legközelebb el fogom forgatni az órát.</p><p>A "frusztrált vagyok" visszatérő kifejezés ami a hétköznapokban egyáltalán nem jellemez, de akármikor lelkizés van, mind a feleségemmel mind itt ezen kapom magam. Örülnék ha ez csitulna. Lehetetlen h ezt ne érezzék a közvetlen közelemben lévők.</p><p>A feladatat jövő hétre, h mi változott a kapcsolatomban ami azt eredményezte, h közeledtem a Dodóhoz, de erre nem tudok válaszolni. Értem a gondolatmenetet, de egészen biztos vagyok abban h a kettő között nincs ok-okozat. Attól még h különlegesek voltak a Dodós találkozók nem szerettem kevésbbé a feleségem és nem kerestem a Dodóban olyat amit a feleségemben nem találtam.</p><p>Nem hiszek lelki társakban. Hiszem h különböző emberekkel más és fantasztikus párkapcsolatunk lehetne, de <mark class="hl">a monogám kapcsolat alappillére, h egyet válasszunk. És felismerjük azt a láthatatlan határt ami kettesben tart minket és nem lépjük át.</mark></p>` },
+    { id:"r8b", sessionNumber:9, date:"2026-09-01", title:"9. Sessionök között:", html:
+      `<p><mark class="hl">A célja a terápiának</mark> fogalmazódott tovább bennem.</p><p>Eddig úgy fogalmaztam, h úgy érzem felrobbanna a szívem, ha esetleg újra találkoznék Dodóval. Nem tervezem, ez csak egy hipotetikus scenárió.</p><p><mark class="hl">Egy olyan helyre szeretnék kerülni, amit érettnek és kiegyensúlyozottnak írnék le.</mark></p><p><mark class="hl">Egy belső nyugalmat érezni a döntésemmel kapcsolatosan és hálát a barátságáért, a közös emlékekért és azért, h szerethettem.</mark></p>` },
     { id:"r9", sessionNumber:10, date:"2026-09-02", title:"10. Alkalom", html:
       `<p>Bebizonyosodott a megérzésem a mai alkalommal kapcsolatosan. Nem készültem fel annyiban, h nem csináltam "semmi idöt" elötte és még nem is sétalva jöttem, hanem kocsival. Lelkileg csak beestem és nem is tudtam kapcsolódni.</p><p>Gyakran támadva érzem magam ezek alatt (a feleségemmel való lelkizés során is) ami persze tudom h hülyeség, de az alatt az idö alatt amíg elmagyarázom magamnak h az én érdekemben vagyunk itt és a challengelés nem egyenlő a támadással, kipofozódom az egyensúlyból.</p><p>Nem igazán tudtam összeszedni, h Én mit gondolok bizonyos dolgokról, hanem csak h mit kellene gondolni azolról.</p><p>Elkezdem leírni az álmaim.</p>` }
   ];
@@ -607,13 +610,21 @@
     if(j===3 && k!==13) return n+"rd";
     return n+"th";
   }
+  function isOverAYearOld(d){
+    var diffDays = (new Date() - d) / 86400000;
+    return Math.abs(diffDays) > 365;
+  }
   function longDate(iso){
     var d = parseISO(iso);
-    return MONTHS[d.getMonth()] + " " + ordinalSuffix(d.getDate());
+    var s = MONTHS[d.getMonth()] + " " + ordinalSuffix(d.getDate());
+    if(isOverAYearOld(d)){ s += ", " + d.getFullYear(); }
+    return s;
   }
   function shortDate(iso){
     var d = parseISO(iso);
-    return MONTHS_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+    var s = MONTHS_SHORT[d.getMonth()] + " " + d.getDate();
+    if(isOverAYearOld(d)){ s += ", " + d.getFullYear(); }
+    return s;
   }
   function todayISO(){
     var d = new Date();
@@ -953,7 +964,15 @@
   function htmlToPlainText(html){
     var tmp = document.createElement("div");
     tmp.innerHTML = html || "";
-    return tmp.textContent.replace(/\n{3,}/g, "\n\n").trim();
+    function walk(node){
+      if(node.nodeType === 3){ return node.nodeValue; }
+      if(node.nodeType !== 1){ return ""; }
+      var text = "";
+      for(var i=0;i<node.childNodes.length;i++){ text += walk(node.childNodes[i]); }
+      if(node.tagName === "MARK"){ return "=="+text+"=="; }
+      return text;
+    }
+    return walk(tmp).replace(/\n{3,}/g, "\n\n").trim();
   }
 
   document.getElementById("copy-btn").addEventListener("click", function(){
@@ -990,18 +1009,23 @@
     return null;
   }
 
-  function openEntry(id){
+  function populateEntryContent(id){
     currentEntryId = id;
     isEditingBody = false;
     isEditingTitle = false;
     var entry = findEntry(id);
-    if(!entry) return;
+    if(!entry) return null;
     entryTitleText.textContent = displayTitle(entry) || "";
     entryTitleText.setAttribute("data-placeholder", longDate(entry.date));
     entryShortdateText.textContent = shortDate(entry.date);
     entryContentEl.innerHTML = entry.html || "";
     entryContentEl.contentEditable = "false";
     entryTitleText.contentEditable = "false";
+    return entry;
+  }
+
+  function openEntry(id){
+    if(!populateEntryContent(id)) return;
     sequenceReveal([
       document.getElementById("entry-back-btn"),
       entryTitleText,
@@ -1010,6 +1034,76 @@
       entryContentEl
     ], 70, 90);
   }
+
+  /* swipe left/right to move to the older/newer entry */
+  var screenEntryEl = document.getElementById("screen-entry");
+  var entryBodyEl = document.getElementById("entry-body");
+  var entrySwapAnimating = false;
+  var swActive = false, swHorizontal = false, swStartX = 0, swStartY = 0;
+
+  function navigateEntry(direction){
+    // direction -1 = newer (swiped right), +1 = older (swiped left)
+    if(entrySwapAnimating || isEditingBody || isEditingTitle) return;
+    var list = sortedEntries();
+    var idx = -1;
+    for(var i=0;i<list.length;i++){ if(list[i].id===currentEntryId){ idx = i; break; } }
+    if(idx===-1) return;
+    var newIdx = idx + direction;
+    if(newIdx < 0 || newIdx >= list.length) return; // already at the newest/oldest, nothing to do
+    animateEntrySwap(list[newIdx].id, direction);
+  }
+
+  function animateEntrySwap(id, direction){
+    entrySwapAnimating = true;
+    hideHlPopup();
+    activeHlContainer = null;
+    var outX = direction > 0 ? "-26px" : "26px";
+    var inX = direction > 0 ? "26px" : "-26px";
+    entryBodyEl.style.transition = "transform .18s var(--ease), opacity .18s var(--ease)";
+    entryBodyEl.style.transform = "translateX("+outX+")";
+    entryBodyEl.style.opacity = "0";
+    setTimeout(function(){
+      populateEntryContent(id);
+      screenEntryEl.scrollTop = 0;
+      entryBodyEl.style.transition = "none";
+      entryBodyEl.style.transform = "translateX("+inX+")";
+      void entryBodyEl.offsetHeight; // force reflow before animating back in
+      setTimeout(function(){
+        entryBodyEl.style.transition = "transform .22s var(--ease), opacity .22s var(--ease)";
+        entryBodyEl.style.transform = "translateX(0)";
+        entryBodyEl.style.opacity = "1";
+        setTimeout(function(){ entrySwapAnimating = false; }, 230);
+      }, 20);
+    }, 190);
+  }
+
+  screenEntryEl.addEventListener("touchstart", function(e){
+    if(isEditingBody || isEditingTitle || e.touches.length!==1){ swActive = false; return; }
+    swActive = true;
+    swHorizontal = false;
+    swStartX = e.touches[0].clientX;
+    swStartY = e.touches[0].clientY;
+  }, {passive:true});
+
+  screenEntryEl.addEventListener("touchmove", function(e){
+    if(!swActive || isEditingBody || isEditingTitle) return;
+    var dx = e.touches[0].clientX - swStartX;
+    var dy = e.touches[0].clientY - swStartY;
+    if(!swHorizontal && Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy)*1.5){
+      swHorizontal = true;
+    }
+    if(swHorizontal && e.cancelable){ e.preventDefault(); }
+  }, {passive:false});
+
+  screenEntryEl.addEventListener("touchend", function(e){
+    if(!swActive) return;
+    swActive = false;
+    if(!swHorizontal || isEditingBody || isEditingTitle) return;
+    if(window.getSelection().toString().length > 0) return; // don't hijack a highlight selection
+    var dx = e.changedTouches[0].clientX - swStartX;
+    if(Math.abs(dx) < 60) return;
+    navigateEntry(dx < 0 ? 1 : -1);
+  });
 
   function enterBodyEdit(){
     if(isEditingBody) return;
@@ -1040,6 +1134,25 @@
     entryTitleText.contentEditable = "false";
     hideHlPopup();
   }
+
+  function attachMarkTapHandler(containerEl){
+    containerEl.addEventListener("click", function(e){
+      var markEl = e.target.closest ? e.target.closest("mark.hl") : null;
+      if(!markEl) return;
+      e.stopPropagation();
+      lastMarkTapAt = Date.now();
+      var range = document.createRange();
+      range.selectNodeContents(markEl);
+      activeHlContainer = containerEl;
+      savedRangeForHl = range.cloneRange();
+      hlPopup.textContent = "Unhighlight";
+      var rect = markEl.getBoundingClientRect();
+      hlPopup.style.left = (rect.left + rect.width/2) + "px";
+      hlPopup.style.top = rect.bottom + "px";
+      hlPopup.classList.add("show");
+    }, true); // capture: run before the container's own click-to-edit handler
+  }
+  attachMarkTapHandler(entryContentEl);
 
   entryContentEl.addEventListener("click", function(){ if(!isEditingBody) enterBodyEdit(); });
   entryTitleText.addEventListener("click", function(e){ e.stopPropagation(); if(!isEditingTitle) enterTitleEdit(); });
@@ -1075,6 +1188,7 @@
   var newContentEl = document.getElementById("new-content");
   var newShortdateText = document.getElementById("new-shortdate-text");
   var pendingNewEntry = null;
+  attachMarkTapHandler(newContentEl);
 
   function nextSessionNumber(){
     var max = -1;
@@ -1220,6 +1334,7 @@
   var hlPopup = document.getElementById("hl-popup");
   var activeHlContainer = null;
   var savedRangeForHl = null;
+  var lastMarkTapAt = 0;
 
   function hideHlPopup(){ hlPopup.classList.remove("show"); savedRangeForHl = null; }
 
@@ -1268,6 +1383,7 @@
   }
 
   function handleSelectionChange(){
+    if(Date.now() - lastMarkTapAt < 250) return; // don't let this race the tap-to-unhighlight popup
     var sel = window.getSelection();
     if(!sel || sel.rangeCount===0 || sel.isCollapsed){ hideHlPopup(); return; }
     var range = sel.getRangeAt(0);
